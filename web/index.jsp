@@ -16,7 +16,7 @@
         <link href="css/mystylesheet.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <a href="signup_page.jsp"><h1>signup</h1></a>
         <% 
            Connection con = ConnectionProvider.getConnection();
         %>
