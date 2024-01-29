@@ -3,7 +3,3 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/JavaScript.js to edit this template
  */
 
-
-$(document).ready(function(){
-    alert("loaded")
-})
