@@ -16,11 +16,11 @@
         <link href="css/mystylesheet.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
-        <a href="signup_page.jsp"><h1>signup</h1></a>
-        <% 
-           Connection con = ConnectionProvider.getConnection();
-        %>
-        <h1><%= con %></h1>
+       
+        <!--navbar-->
+        <%@include file="normal_navbar.jsp" %>
+        
+        
 
 
 
