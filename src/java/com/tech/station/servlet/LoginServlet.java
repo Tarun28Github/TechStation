@@ -5,22 +5,23 @@
 package com.tech.station.servlet;
 
 import com.tech.station.dao.UserDao;
+import com.tech.station.entities.Message;
 import com.tech.station.entities.User;
 import com.tech.station.helper.ConnectionProvider;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 
 /**
  *
  * @author Yogeshwar_Info
  */
-@MultipartConfig
-public class RegisterServlet extends HttpServlet {
+public class LoginServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,34 +37,57 @@ public class RegisterServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
-
-            String check_box = request.getParameter("check");
-            if (check_box == null) {
-
-                out.println("box not checked");
-            } else {
-
-                String name = request.getParameter("username");
-                String password = request.getParameter("password");
-                String email = request.getParameter("useremail");
-                String gender = request.getParameter("gender");
-                String about = request.getParameter("about");
-
-                User user = new User(name, password, email, gender, about);
-
-                try {
-
-                    UserDao userdao = new UserDao(ConnectionProvider.getConnection());
-                    if (userdao.saveUser(user) == true) {
-                        out.println("done");
-                    } else {
-                        out.println("error");
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet LoginServlet</title>");            
+            out.println("</head>");
+            out.println("<body>");
+            
+            //fetching data form Login_page;
+            
+            String useremail = request.getParameter("email");
+            String userpassword = request.getParameter("password");
+            
+            
+            try{
+                
+                UserDao userdao = new UserDao(ConnectionProvider.getConnection());
+                
+                User  u =  userdao.getUserByEmailandPassword(useremail, userpassword);
+                
+                if(u == null){
+                    // show error user email or password is invalid
+                    
+                    Message ms = new Message("Invalid details..... try again","error","alert-danger");
+                    
+                   HttpSession s = request.getSession();
+                   s.setAttribute("msg",ms);
+                   response.sendRedirect( "login_page.jsp");
+                    
+                    
+                    
+                }else{
+                    // put user obj into session object which will remail until browers is not close
+                   
+                    HttpSession s = request.getSession();
+                    s.setAttribute("currentUser", u);
+                    response.sendRedirect("profile_page.jsp");
+                   
+                    
                 }
+                
+                
+                
+            }catch(Exception e){
+                e.printStackTrace();
             }
+         
+            
+            
+            
+            out.println("</body>");
+            out.println("</html>");
         }
     }
 

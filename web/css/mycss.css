@@ -3,7 +3,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to c
 Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
 */
 /* 
-    Created on : Jan 26, 2024, 6:12:06 PM
+    Created on : Jan 29, 2024, 7:22:25 PM
     Author     : Yogeshwar_Info
 */
 
+.primary-background{
+    background-color: #9cec5b !important;
+}
