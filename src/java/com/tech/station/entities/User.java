@@ -23,6 +23,18 @@ public class User {
     public User() {
     }
 
+    public User(int id, String name, String password, String email, String gender, String about, Timestamp signup_date, String profile) {
+        this.id = id;
+        this.name = name;
+        this.password = password;
+        this.email = email;
+        this.gender = gender;
+        this.about = about;
+        this.signup_date = signup_date;
+        this.profile = profile;
+    }
+    
+
     public User(int id, String name, String password, String email, String gender, String about, Timestamp signup_date) {
         this.id = id;
         this.name = name;

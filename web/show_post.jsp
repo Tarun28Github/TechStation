@@ -1,29 +1,48 @@
 <%-- 
-    Document   : Profile.jsp
-    Created on : Jan 31, 2024, 3:35:52 PM
+    Document   : show_post.jsp
+    Created on : Feb 9, 2024, 2:26:16 PM
     Author     : Yogeshwar_Info
 --%>
 
-<%@page import="com.tech.station.entities.Categorie"%>
+
+<%@page import="com.tech.station.dao.LikesDao"%>
+<%@page import="java.text.DateFormat"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="com.tech.station.helper.ConnectionProvider"%>
+<%@page import="com.tech.station.entities.Categorie"%>
+<%@page import="java.util.List"%>
+<%@page import="com.tech.station.entities.Post"%>
 <%@page import="com.tech.station.dao.PostDao"%>
-<%@page import="com.tech.station.entities.Message"%>
 <%@page import="com.tech.station.entities.User"%>
-<%@page errorPage="error_page.jsp" %>
+<%@page import="com.tech.station.helper.ConnectionProvider"%>
+<%@page import="com.tech.station.dao.UserDao"%>
 
 <%
+
     User user = (User) session.getAttribute("currentUser");
     if (user == null) {
         response.sendRedirect("login_page.jsp");
     }
+
+
+%>
+
+<%    int postId = Integer.parseInt(request.getParameter("post_id"));
+
+    PostDao pd = new PostDao(ConnectionProvider.getConnection());
+
+    Post p = pd.getPostByPid(postId);
+
+    int userid = p.getUserid();
+    UserDao ud = new UserDao(ConnectionProvider.getConnection());
+    User nuser = ud.getUserById(userid);
+
 %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>profile_page.jsp</title>
+        <title><%= p.getPtitle()%></title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         <link href="css/mycss.css" rel="stylesheet" type="text/css"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -31,11 +50,35 @@
             .banner-background{
                 clip-path: polygon(0 0, 95% 0, 100% 100%, 5% 100%);
             }
-        </style>
+            .post_title{
+                font-weight: 400;
+                font-size: 40px;
 
+            }
+            .post_content{
+
+            }
+            .post_user_name{
+                font-size: 15px;
+                text-decoration: none;
+
+            }
+            .post_date{
+                font-family: cursive;
+                font-size: 10px;
+
+            }
+            .code-box{
+                background-color: whitesmoke;
+                border-radius:  3px;
+            }
+            .post_code{
+                margin: 5px
+            }
+        </style>
+        
     </head>
     <body>
-
         <!--Navbar-->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
@@ -82,78 +125,54 @@
         </nav>
 
         <!--navbar end-->
-        <%
-            Message m = (Message) session.getAttribute("msg");
-
-            if (m != null) {
-                if (m.getCssClass() == "alert-danger") {
-        %>       
-        <div class="alert alert-danger d-flex align-items-center" role="alert">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
-            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-            </svg>
-            <div>
-                <%= m.getContent()%>
-            </div>
-        </div> 
-        <%     } else {
-        %>
-        <div class="alert alert-success  d-flex align-items-center"  role="alert">
-
-            <div>
-                <%= m.getContent()%>
-            </div>
-        </div> 
-        <%
-                }
-
-                session.removeAttribute("msg");
-            }
-        %>
-
 
         <!--main body start-->
+        <div class ="container">
 
-        <div class="container">
-            <div class="row mt-2">
-                <div class="col-md-4">
-                    <div class="list-group">
-                        <a href="#" onclick="getPosts(0, this)" class="c-Link list-group-item list-group-item-action active" aria-current="true">
-                            All Post
-                        </a>
-                        <%
-                            PostDao pd1 = new PostDao(ConnectionProvider.getConnection());
-                            ArrayList<Categorie> list = pd1.getAllCategories();
-                            for (Categorie c : list) {
-                        %>
+            <div class ="row  my-2">
+                <div class="col-md-8 offset-md-2 ">
 
-                        <a href="#" onclick="getPosts(<%= c.getCid()%>, this)" class=" c-Link list-group-item list-group-item-action"><%= c.getName()%></a>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="post_title"><%= p.getPtitle()%></h3>
 
-                        <%
-                            }
-                        %>
-                    </div>
-                </div>
-                <div class="col-md-8" >
-
-                    <div class="container text-center" id="loader">
-                        <div class="d-flex justify-content-center">
-                            <div class="spinner-border" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
                         </div>
-                    </div>
+                        <div class="card-body">
+                            <img src="Blog-pics/<%= p.getPpic()%>" class="card-img-top" alt="...">
 
-                    <div class="container-fluid" id="post_container">
+                            <div class="row my-2">
+                                <div class="col-sm-8">
+                                    <pre>Posted by <a class="post_user_name" href=""><%=nuser.getName()%></a></pre>
+                                       
+                                </div>
+                                <div class="col-sm-4 text-end">
+                                    <p class="post_date"><b><%= DateFormat.getDateTimeInstance().format(p.getPdate()) %></b></p>
+                                </div>
+                            </div>
+                            <br>                        
+                            <p class="post_content"><%= p.getPcontent()%></p>                         
+                            <br>
+                            <div class="code-box">
+                            <pre class="post_code"><%= p.getPcode()%></pre>
+                            </div>
 
+                        </div>
+                        <div class="card-footer text-end">
+                            <%
+                                LikesDao ld = new LikesDao(ConnectionProvider.getConnection());
+                            %>
+                            <a href="#" onclick="doLike(<%= p.getPid() %>,<%= user.getId() %>)" class="btn btn-outline-primary"><i class="fa-regular fa-thumbs-up"></i> <span class="count_like"><%= ld.countLikesOnPost(p.getPid()) %></span> </a>
+                            <a href="#" class="btn btn-outline-primary "><i class="fa-regular fa-comment"></i></a>
+                        </div>
+                            
                     </div>
 
                 </div>
             </div>
+
         </div>
 
-
-        <!--main body ends-->
+        <!--main body end-->
 
 
         <!--profile model-->
@@ -274,9 +293,9 @@
                                 <select class="form-control" name="cid">
                                     <option selected disable>--select categories--</option>
                                     <%
-//                                        PostDao pd1 = new PostDao(ConnectionProvider.getConnection());
-//                                        ArrayList<Categorie> list = pd1.getAllCategories();ed
-// i have commet this because i have already created a pd object and list object before in the main body so no need to creat another obj here.
+                                        PostDao pd1 = new PostDao(ConnectionProvider.getConnection());
+                                        ArrayList<Categorie> list = pd1.getAllCategories();
+                                        // i have commet this because i have already created a pd object and list object before in the main body so no need to creat another obj here.
                                         for (Categorie c : list) {
                                     %>
                                     <option value="<%=c.getCid()%>"><%=c.getName()%></option>
@@ -321,31 +340,29 @@
 
 
 
-
-
         <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="js/MyJS.js" type="text/javascript"></script>
         <script>
-                            $(document).ready(function () {
+            $(document).ready(function () {
 
-                                let editstatus = false;
-                                $("#edit-profile-button").click(function () {
+                let editstatus = false;
+                $("#edit-profile-button").click(function () {
 
-                                    if (editstatus === false) {
-                                        $("#profile-detail").hide();
-                                        $("#profile-edit").show();
-                                        editstatus = true;
-                                    } else {
-                                        $("#profile-detail").show();
-                                        $("#profile-edit").hide();
-                                        editstatus = false;
-                                    }
-                                });
+                    if (editstatus === false) {
+                        $("#profile-detail").hide();
+                        $("#profile-edit").show();
+                        editstatus = true;
+                    } else {
+                        $("#profile-detail").show();
+                        $("#profile-edit").hide();
+                        editstatus = false;
+                    }
+                });
 
-                            });
+            });
 
         </script>
 
@@ -396,41 +413,7 @@
             });
 
         </script>
-        <!--script for show post-->
-        <script>
-
-            function getPosts(catid, temp) {
-                $("#loader").show()
-                $("#post_container").hide()
-                $(".c-Link").removeClass('active')
-
-                $.ajax({
-
-                    url: "load_post.jsp",
-                    data: {cid: catid},
-                    success: function (data, textStatus, jqXHR) {
-                        console.log(data);
-                        $(temp).addClass('active')
-                        $("#loader").hide()
-                        $("#post_container").show()
-                        $("#post_container").html(data)
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-
-                    }
 
 
-                })
-            }
-
-
-            $(document).ready(function (e) {
-                let allPostRef = $('.c-Link')[0]
-                getPosts(0,allPostRef);
-                
-                
-            })
-
-        </script>
     </body>
 </html>

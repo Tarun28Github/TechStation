@@ -49,7 +49,6 @@ public class UserDao {
         User user = null;
 
         try {
-            
 
             String q = "select * from signup where email=? and password=?;";
 
@@ -58,16 +57,13 @@ public class UserDao {
             stmt.setString(1, email);
             stmt.setString(2, password);
             ResultSet rs = stmt.executeQuery();
-            
-            
 
-            if ( rs.next()){ 
+            if (rs.next()) {
                 user = new User();
-                
-                int id =rs.getInt("id");
+
+                int id = rs.getInt("id");
                 user.setId(id);
-                
-                
+
                 user.setName(rs.getString("username"));
                 user.setPassword(rs.getString("password"));
                 user.setEmail(rs.getString("email"));
@@ -83,16 +79,16 @@ public class UserDao {
 
         return user;
     }
-    
-    public boolean updateUser(User user){
+
+    public boolean updateUser(User user) {
         boolean f = false;
-        
-        try{
-            
-            String query ="update signup set username=? , password=? ,email=? ,gender=? ,about=? ,profile=? where id=?;";
-            
+
+        try {
+
+            String query = "update signup set username=? , password=? ,email=? ,gender=? ,about=? ,profile=? where id=?;";
+
             PreparedStatement pstmt = this.con.prepareStatement(query);
-            
+
             pstmt.setString(1, user.getName());
             pstmt.setString(2, user.getPassword());
             pstmt.setString(3, user.getEmail());
@@ -100,16 +96,51 @@ public class UserDao {
             pstmt.setString(5, user.getAbout());
             pstmt.setString(6, user.getProfile());
             pstmt.setInt(7, user.getId());
-            
+
             pstmt.executeUpdate();
-            
-            f =true;
-            
-        }
-        catch(Exception e){
+
+            f = true;
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return f;
     }
-    
+
+    public User getUserById(int uid) {
+
+        User user = null;
+
+        try {
+
+            String q = "select * from signup where id=?;";
+
+            PreparedStatement stmt = this.con.prepareStatement(q);
+
+            stmt.setInt(1, uid);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+
+                int userid = rs.getInt("id");
+                String uname = rs.getString("username");
+                String uemail = rs.getString("email");
+                String upassword = rs.getString("password");
+                String uabout = rs.getString("about");
+                Timestamp udate = rs.getTimestamp("signup_date");
+                String uprofile = rs.getString("profile");
+                
+                user = new User(userid, uname, upassword, uemail, uemail, uabout, udate,uprofile);
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+
+        return user;
+    }
+
 }
